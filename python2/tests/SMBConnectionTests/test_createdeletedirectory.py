@@ -2,7 +2,7 @@
 
 import os, time, random
 from smb.SMBConnection import SMBConnection
-from util import getConnectionInfo
+from .util import getConnectionInfo
 from nose.tools import with_setup
 from smb import smb_structs
 
@@ -36,13 +36,13 @@ def test_english_directory_SMB1():
     conn.createDirectory('smbtest', path)
 
     entries = conn.listPath('smbtest', os.path.dirname(path.replace('/', os.sep)))
-    names = map(lambda e: e.filename, entries)
+    names = [e.filename for e in entries]
     assert os.path.basename(path.replace('/', os.sep)) in names
 
     conn.deleteDirectory('smbtest', path)
 
     entries = conn.listPath('smbtest', os.path.dirname(path.replace('/', os.sep)))
-    names = map(lambda e: e.filename, entries)
+    names = [e.filename for e in entries]
     assert os.path.basename(path.replace('/', os.sep)) not in names
 
 @with_setup(setup_func_SMB2, teardown_func)
@@ -53,45 +53,45 @@ def test_english_directory_SMB2():
     conn.createDirectory('smbtest', path)
 
     entries = conn.listPath('smbtest', os.path.dirname(path.replace('/', os.sep)))
-    names = map(lambda e: e.filename, entries)
+    names = [e.filename for e in entries]
     assert os.path.basename(path.replace('/', os.sep)) in names
 
     conn.deleteDirectory('smbtest', path)
 
     entries = conn.listPath('smbtest', os.path.dirname(path.replace('/', os.sep)))
-    names = map(lambda e: e.filename, entries)
+    names = [e.filename for e in entries]
     assert os.path.basename(path.replace('/', os.sep)) not in names
 
 @with_setup(setup_func_SMB1, teardown_func)
 def test_unicode_directory_SMB1():
     global conn
 
-    path = os.sep + u'文件夹创建 %d-%d' % ( time.time(), random.randint(0, 1000) )
+    path = os.sep + '文件夹创建 %d-%d' % ( time.time(), random.randint(0, 1000) )
     conn.createDirectory('smbtest', path)
 
     entries = conn.listPath('smbtest', os.path.dirname(path.replace('/', os.sep)))
-    names = map(lambda e: e.filename, entries)
+    names = [e.filename for e in entries]
     assert os.path.basename(path.replace('/', os.sep)) in names
 
     conn.deleteDirectory('smbtest', path)
 
     entries = conn.listPath('smbtest', os.path.dirname(path.replace('/', os.sep)))
-    names = map(lambda e: e.filename, entries)
+    names = [e.filename for e in entries]
     assert os.path.basename(path.replace('/', os.sep)) not in names
 
 @with_setup(setup_func_SMB2, teardown_func)
 def test_unicode_directory_SMB2():
     global conn
 
-    path = os.sep + u'文件夹创建 %d-%d' % ( time.time(), random.randint(0, 1000) )
+    path = os.sep + '文件夹创建 %d-%d' % ( time.time(), random.randint(0, 1000) )
     conn.createDirectory('smbtest', path)
 
     entries = conn.listPath('smbtest', os.path.dirname(path.replace('/', os.sep)))
-    names = map(lambda e: e.filename, entries)
+    names = [e.filename for e in entries]
     assert os.path.basename(path.replace('/', os.sep)) in names
 
     conn.deleteDirectory('smbtest', path)
 
     entries = conn.listPath('smbtest', os.path.dirname(path.replace('/', os.sep)))
-    names = map(lambda e: e.filename, entries)
+    names = [e.filename for e in entries]
     assert os.path.basename(path.replace('/', os.sep)) not in names

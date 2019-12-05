@@ -1,19 +1,19 @@
 
 import logging, binascii, time, hmac
 from datetime import datetime
-from smb_constants import *
-from smb2_constants import *
-from smb_structs import *
-from smb2_structs import *
+from .smb_constants import *
+from .smb2_constants import *
+from .smb_structs import *
+from .smb2_structs import *
 from nmb.base import NMBSession
-from utils import convertFILETIMEtoEpoch
-import ntlm, securityblob
+from .utils import convertFILETIMEtoEpoch
+from . import ntlm, securityblob
 
 try:
     import hashlib
     sha256 = hashlib.sha256
 except ImportError:
-    from utils import sha256
+    from .utils import sha256
 
 
 class NotReadyError(Exception):
@@ -30,8 +30,8 @@ class SMBTimeout(Exception):
 
 
 def _convert_to_unicode(string):
-    if not isinstance(string, unicode):
-        string = unicode(string, "utf-8")
+    if not isinstance(string, str):
+        string = str(string, "utf-8")
     return string
 
 
@@ -257,7 +257,7 @@ class SMB(NMBSession):
                             self.onAuthOK()
                         else:
                             raise ProtocolError('SMB2_COM_SESSION_SETUP status is 0 but security blob negResult value is %d' % result, message.raw_data, message)
-                    except securityblob.BadSecurityBlobError, ex:
+                    except securityblob.BadSecurityBlobError as ex:
                         raise ProtocolError(str(ex), message.raw_data, message)
                 elif message.status == 0xc0000016:  # STATUS_MORE_PROCESSING_REQUIRED
                     self.session_id = message.session_id
@@ -265,7 +265,7 @@ class SMB(NMBSession):
                         result, ntlm_token = securityblob.decodeChallengeSecurityBlob(message.payload.security_blob)
                         if result == securityblob.RESULT_ACCEPT_INCOMPLETE:
                             self._handleSessionChallenge(message, ntlm_token)
-                    except ( securityblob.BadSecurityBlobError, securityblob.UnsupportedSecurityProvider ), ex:
+                    except ( securityblob.BadSecurityBlobError, securityblob.UnsupportedSecurityProvider ) as ex:
                         raise ProtocolError(str(ex), message.raw_data, message)
                 elif message.status == 0xc000006d:  # STATUS_LOGON_FAILURE
                     self.has_authenticated = False
@@ -465,7 +465,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             for i in range(0, shares_count):
                 max_length, _, length = struct.unpack('<III', data_bytes[offset:offset+12])
                 offset += 12
-                results[i].name = unicode(data_bytes[offset:offset+length*2-2], 'UTF-16LE')
+                results[i].name = str(data_bytes[offset:offset+length*2-2], 'UTF-16LE')
 
                 if length % 2 != 0:
                     offset += (length * 2 + 2)
@@ -474,7 +474,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
 
                 max_length, _, length = struct.unpack('<III', data_bytes[offset:offset+12])
                 offset += 12
-                results[i].comments = unicode(data_bytes[offset:offset+length*2-2], 'UTF-16LE')
+                results[i].comments = str(data_bytes[offset:offset+length*2-2], 'UTF-16LE')
 
                 if length % 2 != 0:
                     offset += (length * 2 + 2)
@@ -519,7 +519,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             elif kwargs['error'] is not None:
                 errback(OperationFailure(kwargs['error'], messages_history))
 
-        if not self.connected_trees.has_key(path):
+        if path not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if connect_message.status == 0:
@@ -593,7 +593,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             if query_message.status == 0:
                 data_buf = decodeQueryStruct(kwargs['data_buf'] + query_message.payload.data)
                 sendQuery(query_message.tid, kwargs['fid'], data_buf)
-            elif query_message.status == 0x80000006L:  # STATUS_NO_MORE_FILES
+            elif query_message.status == 0x80000006:  # STATUS_NO_MORE_FILES
                 closeFid(query_message.tid, kwargs['fid'], results = results)
             else:
                 closeFid(query_message.tid, kwargs['fid'], error = query_message.status)
@@ -643,7 +643,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             elif kwargs['error'] is not None:
                 errback(OperationFailure('Failed to list %s on %s: Query failed with errorcode 0x%08x' % ( path, service_name, kwargs['error'] ), messages_history))
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if connect_message.status == 0:
@@ -700,7 +700,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
                 p = create_message.payload
                 info = SharedFile(p.create_time, p.lastaccess_time, p.lastwrite_time, p.change_time,
                                   p.file_size, p.allocation_size, p.file_attributes,
-                                  unicode(path), unicode(path))
+                                  str(path), str(path))
                 closeFid(create_message.tid, p.fid, info = info)
             else:
                 errback(OperationFailure('Failed to get attributes for %s on %s: Unable to open remote file object' % ( path, service_name ), messages_history))
@@ -718,7 +718,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             elif kwargs['error'] is not None:
                 errback(OperationFailure('Failed to get attributes for %s on %s: Query failed with errorcode 0x%08x' % ( path, service_name, kwargs['error'] ), messages_history))
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if connect_message.status == 0:
@@ -735,7 +735,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             sendCreate(self.connected_trees[service_name])
 
     def _retrieveFile_SMB2(self, service_name, path, file_obj, callback, errback, timeout = 30):
-        return self._retrieveFileFromOffset(service_name, path, file_obj, callback, errback, 0L, -1L, timeout)
+        return self._retrieveFileFromOffset(service_name, path, file_obj, callback, errback, 0, -1, timeout)
 
     def _retrieveFileFromOffset_SMB2(self, service_name, path, file_obj, callback, errback, starting_offset, max_length, timeout = 30):
         if not self.has_authenticated:
@@ -848,7 +848,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             elif kwargs['error'] is not None:
                 errback(OperationFailure('Failed to retrieve %s on %s: Read failed' % ( path, service_name ), messages_history))
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if connect_message.status == 0:
@@ -865,7 +865,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             sendCreate(self.connected_trees[service_name])
 
     def _storeFile_SMB2(self, service_name, path, file_obj, callback, errback, timeout = 30):
-        self._storeFileFromOffset_SMB2(service_name, path, file_obj, callback, errback, 0L, timeout)
+        self._storeFileFromOffset_SMB2(service_name, path, file_obj, callback, errback, 0, timeout)
 
     def _storeFileFromOffset_SMB2(self, service_name, path, file_obj, callback, errback, starting_offset, timeout = 30):
         if not self.has_authenticated:
@@ -944,7 +944,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             elif kwargs['error'] is not None:
                 errback(OperationFailure('Failed to store %s on %s: Write failed' % ( path, service_name ), messages_history))
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if connect_message.status == 0:
@@ -1034,7 +1034,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to delete %s on %s: Delete failed' % ( path, service_name ), messages_history))
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if connect_message.status == 0:
@@ -1102,7 +1102,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
         def closeCB(close_message, **kwargs):
             callback(path)
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if connect_message.status == 0:
@@ -1191,7 +1191,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to delete %s on %s: Delete failed' % ( path, service_name ), messages_history))
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if connect_message.status == 0:
@@ -1288,7 +1288,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to rename %s on %s: Rename failed' % ( old_path, service_name ), messages_history))
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if connect_message.status == 0:
@@ -1361,7 +1361,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
                 snapshots_count = struct.unpack('<I', enum_message.payload.out_data[4:8])[0]
                 for i in range(0, snapshots_count):
                     s = enum_message.payload.out_data[12+i*50:12+48+i*50].decode('UTF-16LE')
-                    results.append(datetime(*map(int, ( s[5:9], s[10:12], s[13:15], s[16:18], s[19:21], s[22:24] ))))
+                    results.append(datetime(*list(map(int, ( s[5:9], s[10:12], s[13:15], s[16:18], s[19:21], s[22:24] )))))
                 closeFid(kwargs['tid'], kwargs['fid'], results = results)
             else:
                 closeFid(kwargs['tid'], kwargs['fid'], status = enum_message.status)
@@ -1379,7 +1379,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to list snapshots %s on %s: List failed' % ( path, service_name ), messages_history))
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if connect_message.status == 0:
@@ -1469,14 +1469,14 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
                                 self.onAuthOK()
                             else:
                                 raise ProtocolError('SMB_COM_SESSION_SETUP_ANDX status is 0 but security blob negResult value is %d' % result, message.raw_data, message)
-                        except securityblob.BadSecurityBlobError, ex:
+                        except securityblob.BadSecurityBlobError as ex:
                             raise ProtocolError(str(ex), message.raw_data, message)
                     elif message.status.internal_value == 0xc0000016:  # STATUS_MORE_PROCESSING_REQUIRED
                         try:
                             result, ntlm_token = securityblob.decodeChallengeSecurityBlob(message.payload.security_blob)
                             if result == securityblob.RESULT_ACCEPT_INCOMPLETE:
                                 self._handleSessionChallenge(message, ntlm_token)
-                        except ( securityblob.BadSecurityBlobError, securityblob.UnsupportedSecurityProvider ), ex:
+                        except ( securityblob.BadSecurityBlobError, securityblob.UnsupportedSecurityProvider ) as ex:
                             raise ProtocolError(str(ex), message.raw_data, message)
                     elif message.status.internal_value == 0xc000006d:  # STATUS_LOGON_FAILURE
                         self.has_authenticated = False
@@ -1709,7 +1709,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             for i in range(0, shares_count):
                 max_length, _, length = struct.unpack('<III', data_bytes[offset:offset+12])
                 offset += 12
-                results[i].name = unicode(data_bytes[offset:offset+length*2-2], 'UTF-16LE')
+                results[i].name = str(data_bytes[offset:offset+length*2-2], 'UTF-16LE')
 
                 if length % 2 != 0:
                     offset += (length * 2 + 2)
@@ -1718,7 +1718,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
 
                 max_length, _, length = struct.unpack('<III', data_bytes[offset:offset+12])
                 offset += 12
-                results[i].comments = unicode(data_bytes[offset:offset+length*2-2], 'UTF-16LE')
+                results[i].comments = str(data_bytes[offset:offset+length*2-2], 'UTF-16LE')
 
                 if length % 2 != 0:
                     offset += (length * 2 + 2)
@@ -1758,7 +1758,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             self._sendSMBMessage(m)
             messages_history.append(m)
 
-        if not self.connected_trees.has_key(path):
+        if path not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if not connect_message.status.hasError:
@@ -1841,7 +1841,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
         def findFirstCB(find_message, **kwargs):
             messages_history.append(find_message)
             if not find_message.status.hasError:
-                if not kwargs.has_key('total_count'):
+                if 'total_count' not in kwargs:
                     # TRANS2_FIND_FIRST2 response. [MS-CIFS]: 2.2.6.2.2
                     sid, search_count, end_of_search, _, last_name_offset = struct.unpack('<HHHHH', find_message.payload.params_bytes[:10])
                     kwargs.update({ 'sid': sid, 'end_of_search': end_of_search, 'last_name_offset': last_name_offset, 'data_buf': '' })
@@ -1851,7 +1851,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
                 send_next = True
                 if find_message.payload.data_bytes:
                     d = decodeFindStruct(kwargs['data_buf'] + find_message.payload.data_bytes)
-                    if not kwargs.has_key('data_count'):
+                    if 'data_count' not in kwargs:
                         if len(find_message.payload.data_bytes) != find_message.payload.total_data_count:
                             kwargs.update({ 'data_count': len(find_message.payload.data_bytes),
                                             'total_count': find_message.payload.total_data_count,
@@ -1898,7 +1898,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
         def findNextCB(find_message, **kwargs):
             messages_history.append(find_message)
             if not find_message.status.hasError:
-                if not kwargs.has_key('total_count'):
+                if 'total_count' not in kwargs:
                     # TRANS2_FIND_NEXT2 response. [MS-CIFS]: 2.2.6.3.2
                     search_count, end_of_search, _, last_name_offset = struct.unpack('<HHHH', find_message.payload.params_bytes[:8])
                     kwargs.update({ 'end_of_search': end_of_search, 'last_name_offset': last_name_offset, 'data_buf': '' })
@@ -1908,7 +1908,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
                 send_next = True
                 if find_message.payload.data_bytes:
                     d = decodeFindStruct(kwargs['data_buf'] + find_message.payload.data_bytes)
-                    if not kwargs.has_key('data_count'):
+                    if 'data_count' not in kwargs:
                         if len(find_message.payload.data_bytes) != find_message.payload.total_data_count:
                             kwargs.update({ 'data_count': len(find_message.payload.data_bytes),
                                             'total_count': find_message.payload.total_data_count,
@@ -1931,7 +1931,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to list %s on %s: Unable to retrieve file list' % ( path, service_name ), messages_history))
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if not connect_message.status.hasError:
@@ -1986,12 +1986,12 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
                 file_attributes, _, alloc_size, file_size = struct.unpack(info_format, query_message.payload.data_bytes[:info_size])
         
                 info = SharedFile(create_time, last_access_time, last_write_time, last_attr_change_time,
-                                  file_size, alloc_size, file_attributes, unicode(path), unicode(path))
+                                  file_size, alloc_size, file_attributes, str(path), str(path))
                 callback(info)
             else:
                 errback(OperationFailure('Failed to get attributes for %s on %s: Read failed' % ( path, service_name ), messages_history))
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if not connect_message.status.hasError:
@@ -2008,7 +2008,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             sendQuery(self.connected_trees[service_name])
     
     def _retrieveFile_SMB1(self, service_name, path, file_obj, callback, errback, timeout = 30):
-        return self._retrieveFileFromOffset(service_name, path, file_obj, callback, errback, 0L, -1L, timeout)
+        return self._retrieveFileFromOffset(service_name, path, file_obj, callback, errback, 0, -1, timeout)
 
     def _retrieveFileFromOffset_SMB1(self, service_name, path, file_obj, callback, errback, starting_offset, max_length, timeout = 30):
         if not self.has_authenticated:
@@ -2033,9 +2033,9 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             if not open_message.status.hasError:
                 if max_length == 0:
                     closeFid(open_message.tid, open_message.payload.fid)
-                    callback(( file_obj, open_message.payload.file_attributes, 0L ))
+                    callback(( file_obj, open_message.payload.file_attributes, 0 ))
                 else:
-                    sendRead(open_message.tid, open_message.payload.fid, starting_offset, open_message.payload.file_attributes, 0L, max_length)
+                    sendRead(open_message.tid, open_message.payload.fid, starting_offset, open_message.payload.file_attributes, 0, max_length)
             else:
                 errback(OperationFailure('Failed to retrieve %s on %s: Unable to open file' % ( path, service_name ), messages_history))
 
@@ -2085,7 +2085,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             self._sendSMBMessage(m)
             messages_history.append(m)
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if not connect_message.status.hasError:
@@ -2102,7 +2102,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             sendOpen(self.connected_trees[service_name])
             
     def _storeFile_SMB1(self, service_name, path, file_obj, callback, errback, timeout = 30):   
-        self._storeFileFromOffset_SMB1(service_name, path, file_obj, callback, errback, 0L, timeout) 
+        self._storeFileFromOffset_SMB1(service_name, path, file_obj, callback, errback, 0, timeout) 
 
     def _storeFileFromOffset_SMB1(self, service_name, path, file_obj, callback, errback, starting_offset, timeout = 30):
         if not self.has_authenticated:
@@ -2158,7 +2158,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             self._sendSMBMessage(m)
             messages_history.append(m)
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if not connect_message.status.hasError:
@@ -2196,7 +2196,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to store %s on %s: Delete failed' % ( path, service_name ), messages_history))
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if not connect_message.status.hasError:
@@ -2233,7 +2233,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to create directory %s on %s: Create failed' % ( path, service_name ), messages_history))
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if not connect_message.status.hasError:
@@ -2270,7 +2270,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to delete directory %s on %s: Delete failed' % ( path, service_name ), messages_history))
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if not connect_message.status.hasError:
@@ -2310,7 +2310,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to rename %s on %s: Rename failed' % ( old_path, service_name ), messages_history))
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if not connect_message.status.hasError:
@@ -2380,7 +2380,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
                 snapshots_count = struct.unpack('<I', enum_message.payload.data_bytes[4:8])[0]
                 for i in range(0, snapshots_count):
                     s = enum_message.payload.data_bytes[12+i*50:12+48+i*50].decode('UTF-16LE')
-                    results.append(datetime(*map(int, ( s[5:9], s[10:12], s[13:15], s[16:18], s[19:21], s[22:24] ))))
+                    results.append(datetime(*list(map(int, ( s[5:9], s[10:12], s[13:15], s[16:18], s[19:21], s[22:24] )))))
                 closeFid(kwargs['tid'], kwargs['fid'])
                 callback(results)
             else:
@@ -2393,7 +2393,7 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             self._sendSMBMessage(m)
             messages_history.append(m)
 
-        if not self.connected_trees.has_key(service_name):
+        if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
                 if not connect_message.status.hasError:
@@ -2470,7 +2470,7 @@ class SharedDevice:
         return bool(self._type & 0x40000000)
 
     def __unicode__(self):
-        return u'Shared device: %s (type:0x%02x comments:%s)' % (self.name, self.type, self.comments )
+        return 'Shared device: %s (type:0x%02x comments:%s)' % (self.name, self.type, self.comments )
 
 
 class SharedFile:
@@ -2507,7 +2507,7 @@ class SharedFile:
         return bool(self.file_attributes & ATTR_READONLY)
     
     def __unicode__(self):
-        return u'Shared file: %s (FileSize:%d bytes, isDirectory:%s)' % ( self.filename, self.file_size, self.isDirectory )
+        return 'Shared file: %s (FileSize:%d bytes, isDirectory:%s)' % ( self.filename, self.file_size, self.isDirectory )
 
 
 class _PendingRequest:

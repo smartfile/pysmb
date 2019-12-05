@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import os, random, time
-from StringIO import StringIO
+from io import StringIO
 from nose.twistedtools import reactor, deferred
 from twisted.internet import defer
 from smb.SMBProtocol import SMBProtocolFactory
 from smb import smb_structs
-from util import getConnectionInfo
+from .util import getConnectionInfo
 
 
 class RenameFactory(SMBProtocolFactory):
@@ -30,7 +30,7 @@ class RenameFactory(SMBProtocolFactory):
         d.addErrback(self.d.errback)
 
     def listComplete(self, entries):
-        filenames = map(lambda e: e.filename, entries)
+        filenames = [e.filename for e in entries]
         assert os.path.basename(self.old_path.replace('/', os.sep)) in filenames
         assert os.path.basename(self.new_path.replace('/', os.sep)) not in filenames
 
@@ -44,7 +44,7 @@ class RenameFactory(SMBProtocolFactory):
         d.addErrback(self.d.errback)
 
     def list2Complete(self, entries):
-        filenames = map(lambda e: e.filename, entries)
+        filenames = [e.filename for e in entries]
         assert os.path.basename(self.new_path.replace('/', os.sep)) in filenames
         assert os.path.basename(self.old_path.replace('/', os.sep)) not in filenames
         self.cleanup()
@@ -108,8 +108,8 @@ def test_rename_unicode_file_SMB1():
 
     factory = RenameFileFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service = 'smbtest'
-    factory.old_path = u'/改名测试 %d-%d.txt' % ( time.time(), random.randint(1000, 9999) )
-    factory.new_path = u'/改名测试 %d-%d.txt' % ( time.time(), random.randint(1000, 9999) )
+    factory.old_path = '/改名测试 %d-%d.txt' % ( time.time(), random.randint(1000, 9999) )
+    factory.new_path = '/改名测试 %d-%d.txt' % ( time.time(), random.randint(1000, 9999) )
     reactor.connectTCP(info['server_ip'], info['server_port'], factory)
     return factory.d
 
@@ -120,8 +120,8 @@ def test_rename_unicode_file_SMB2():
 
     factory = RenameFileFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service = 'smbtest'
-    factory.old_path = u'/改名测试 %d-%d.txt' % ( time.time(), random.randint(1000, 9999) )
-    factory.new_path = u'/改名测试 %d-%d.txt' % ( time.time(), random.randint(1000, 9999) )
+    factory.old_path = '/改名测试 %d-%d.txt' % ( time.time(), random.randint(1000, 9999) )
+    factory.new_path = '/改名测试 %d-%d.txt' % ( time.time(), random.randint(1000, 9999) )
     reactor.connectTCP(info['server_ip'], info['server_port'], factory)
     return factory.d
 
@@ -156,8 +156,8 @@ def test_rename_unicode_directory_SMB1():
 
     factory = RenameDirectoryFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service = 'smbtest'
-    factory.old_path = u'/改名测试 %d-%d' % ( time.time(), random.randint(1000, 9999) )
-    factory.new_path = u'/改名测试 %d-%d' % ( time.time(), random.randint(1000, 9999) )
+    factory.old_path = '/改名测试 %d-%d' % ( time.time(), random.randint(1000, 9999) )
+    factory.new_path = '/改名测试 %d-%d' % ( time.time(), random.randint(1000, 9999) )
     reactor.connectTCP(info['server_ip'], info['server_port'], factory)
     return factory.d
 
@@ -168,7 +168,7 @@ def test_rename_unicode_directory_SMB2():
 
     factory = RenameDirectoryFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service = 'smbtest'
-    factory.old_path = u'/改名测试 %d-%d' % ( time.time(), random.randint(1000, 9999) )
-    factory.new_path = u'/改名测试 %d-%d' % ( time.time(), random.randint(1000, 9999) )
+    factory.old_path = '/改名测试 %d-%d' % ( time.time(), random.randint(1000, 9999) )
+    factory.new_path = '/改名测试 %d-%d' % ( time.time(), random.randint(1000, 9999) )
     reactor.connectTCP(info['server_ip'], info['server_port'], factory)
     return factory.d

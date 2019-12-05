@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import os, urllib, urllib2, time, random
-from StringIO import StringIO
+import os, urllib.request, urllib.parse, urllib.error, urllib.request, urllib.error, urllib.parse, time, random
+from io import StringIO
 from smb.SMBHandler import SMBHandler
-import util
+from . import util
 
 
 try:
@@ -17,7 +17,7 @@ except ImportError:
 
 def test_basic():
     # Basic test for smb URLs
-    director = urllib2.build_opener(SMBHandler)
+    director = urllib.request.build_opener(SMBHandler)
     fh = director.open('smb://%(user)s:%(password)s@%(server_ip)s/smbtest/rfc1001.txt' % util.getConnectionInfo())
 
     s = fh.read()
@@ -31,8 +31,8 @@ def test_basic():
 
 def test_unicode():
     # Test smb URLs with unicode paths
-    director = urllib2.build_opener(SMBHandler)
-    fh = director.open(u'smb://%(user)s:%(password)s@%(server_ip)s/smbtest/测试文件夹/垃圾文件.dat' % util.getConnectionInfo())
+    director = urllib.request.build_opener(SMBHandler)
+    fh = director.open('smb://%(user)s:%(password)s@%(server_ip)s/smbtest/测试文件夹/垃圾文件.dat' % util.getConnectionInfo())
 
     s = fh.read()
     md = MD5()
@@ -52,7 +52,7 @@ def test_upload():
     info = util.getConnectionInfo()
     info['filename'] = os.sep + 'StoreTest-%d-%d.dat' % ( time.time(), random.randint(0, 10000) )
 
-    director = urllib2.build_opener(SMBHandler)
+    director = urllib.request.build_opener(SMBHandler)
     upload_fh = director.open('smb://%(user)s:%(password)s@%(server_ip)s/smbtest/%(filename)s' % info, data = open(TEST_FILENAME, 'rb'))
 
     retr_fh = director.open('smb://%(user)s:%(password)s@%(server_ip)s/smbtest/%(filename)s' % info)
@@ -73,7 +73,7 @@ def test_overwrite():
     test_md = MD5()
     test_md.update(test_s)
 
-    director = urllib2.build_opener(SMBHandler)
+    director = urllib.request.build_opener(SMBHandler)
     upload_fh = director.open('smb://%(user)s:%(password)s@%(server_ip)s/smbtest/%(filename)s' % info, data = StringIO(test_s))
 
     retr_fh = director.open('smb://%(user)s:%(password)s@%(server_ip)s/smbtest/%(filename)s' % info)

@@ -1,8 +1,8 @@
 
 import struct, logging, random
-from nmb_constants import *
-from nmb_structs import *
-from utils import encode_name
+from .nmb_constants import *
+from .nmb_structs import *
+from .utils import encode_name
 
 class NMBSession:
 

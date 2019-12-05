@@ -1,7 +1,7 @@
 
 import os, sys, struct, types, logging, binascii, time
-from StringIO import StringIO
-from smb_constants import *
+from io import StringIO
+from .smb_constants import *
 
 
 # Set to True if you want to enable support for extended security. Required for Windows Vista and later
@@ -86,7 +86,7 @@ class SMBError:
         self.reset()
 
     def reset(self):
-        self.internal_value = 0L
+        self.internal_value = 0
         self.is_ntstatus = True
 
     def __str__(self):
@@ -139,7 +139,7 @@ class SMBMessage:
         self.tid = 0
         self.uid = 0
         self.mid = 0
-        self.security = 0L
+        self.security = 0
         self.parameters_data = ''
         self.data = ''
         self.payload = None
@@ -291,9 +291,9 @@ class ComNegotiateRequest(Payload):
         assert message.payload == self
         message.parameters_data = ''
         if SUPPORT_SMB2:
-            message.data = ''.join(map(lambda s: '\x02'+s+'\x00', DIALECTS + DIALECTS2))
+            message.data = ''.join(['\x02'+s+'\x00' for s in DIALECTS + DIALECTS2])
         else:
-            message.data = ''.join(map(lambda s: '\x02'+s+'\x00', DIALECTS))
+            message.data = ''.join(['\x02'+s+'\x00' for s in DIALECTS])
 
 
 class ComNegotiateResponse(Payload):
@@ -605,7 +605,7 @@ class ComNTCreateAndxRequest(Payload):
     PAYLOAD_STRUCT_FORMAT = '<BHIIIQIIIIIB'
     PAYLOAD_STRUCT_SIZE = struct.calcsize(PAYLOAD_STRUCT_FORMAT)
 
-    def __init__(self, filename, flags = 0, root_fid = 0, access_mask = 0, allocation_size = 0L, ext_attr = 0,
+    def __init__(self, filename, flags = 0, root_fid = 0, access_mask = 0, allocation_size = 0, ext_attr = 0,
                  share_access = 0, create_disp = 0, create_options = 0, impersonation = 0, security_flags = 0):
         self.filename = (filename + '\0').encode('UTF-16LE')
         self.flags = flags

@@ -1,7 +1,7 @@
 
 import random
 from smb.SMBConnection import SMBConnection
-from util import getConnectionInfo
+from .util import getConnectionInfo
 from nose.tools import with_setup
 
 conn = None

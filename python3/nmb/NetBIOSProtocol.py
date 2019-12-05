@@ -103,7 +103,7 @@ class NBNSProtocol(DatagramProtocol, NBNS):
 
         def stripCode(ret):
             if ret is not None: # got valid response. Somehow the callback is also called when there is an error.
-                d.callback(map(lambda s: s[0], filter(lambda s: s[1] == TYPE_SERVER, ret)))
+                d.callback([s[0] for s in [s for s in ret if s[1] == TYPE_SERVER]])
 
         d2.addCallback(stripCode)
         self.pending_trns[trn_id] = ( time.time()+timeout, NAME_QUERY, d2 )
@@ -116,7 +116,7 @@ class NBNSProtocol(DatagramProtocol, NBNS):
         now = time.time()
 
         # reply should have been received in the past
-        expired = filter(lambda (trn_id, (expiry_time, name, d)): expiry_time < now, self.pending_trns.iteritems())
+        expired = [trn_id_expiry_time_name_d for trn_id_expiry_time_name_d in iter(self.pending_trns.items()) if trn_id_expiry_time_name_d[1][0] < now]
 
         # remove expired items from dict + call errback
         def expire_item(item):
@@ -127,7 +127,7 @@ class NBNSProtocol(DatagramProtocol, NBNS):
                 d.errback(NetBIOSTimeout(name))
             except: pass
 
-        map(expire_item, expired)
+        list(map(expire_item, expired))
 
         if self.transport:
             reactor.callLater(1, self.cleanupPendingTrns)

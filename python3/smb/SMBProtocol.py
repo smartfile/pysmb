@@ -59,7 +59,7 @@ class SMBProtocol(Protocol, SMB):
     def _cleanupPendingRequests(self):
         if self.factory.instance == self:
             now = time.time()
-            for mid, r in self.pending_requests.items():
+            for mid, r in list(self.pending_requests.items()):
                 if r.expiry_time < now:
                     try:
                         r.errback(SMBTimeout())

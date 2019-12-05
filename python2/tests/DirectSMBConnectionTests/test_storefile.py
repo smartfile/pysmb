@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os, tempfile, random, time
-from StringIO import StringIO
+from io import StringIO
 from smb.SMBConnection import SMBConnection
-from util import getConnectionInfo
+from .util import getConnectionInfo
 from nose.tools import with_setup
 from smb import smb_structs
 
@@ -49,7 +49,7 @@ def test_store_long_filename_SMB1():
     assert filesize == TEST_FILESIZE
 
     entries = conn.listPath('smbtest', os.path.dirname(filename.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(filename.replace('/', os.sep)) in filenames
 
     buf = StringIO()
@@ -72,7 +72,7 @@ def test_store_long_filename_SMB2():
     assert filesize == TEST_FILESIZE
 
     entries = conn.listPath('smbtest', os.path.dirname(filename.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(filename.replace('/', os.sep)) in filenames
 
     buf = StringIO()
@@ -89,13 +89,13 @@ def test_store_long_filename_SMB2():
 
 @with_setup(setup_func_SMB1, teardown_func)
 def test_store_unicode_filename_SMB1():
-    filename = os.sep + u'上载测试 %d-%d.dat' % ( time.time(), random.randint(0, 10000) )
+    filename = os.sep + '上载测试 %d-%d.dat' % ( time.time(), random.randint(0, 10000) )
 
     filesize = conn.storeFile('smbtest', filename, open(TEST_FILENAME, 'rb'))
     assert filesize == TEST_FILESIZE
 
     entries = conn.listPath('smbtest', os.path.dirname(filename.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(filename.replace('/', os.sep)) in filenames
 
     buf = StringIO()
@@ -112,13 +112,13 @@ def test_store_unicode_filename_SMB1():
 
 @with_setup(setup_func_SMB2, teardown_func)
 def test_store_unicode_filename_SMB2():
-    filename = os.sep + u'上载测试 %d-%d.dat' % ( time.time(), random.randint(0, 10000) )
+    filename = os.sep + '上载测试 %d-%d.dat' % ( time.time(), random.randint(0, 10000) )
 
     filesize = conn.storeFile('smbtest', filename, open(TEST_FILENAME, 'rb'))
     assert filesize == TEST_FILESIZE
 
     entries = conn.listPath('smbtest', os.path.dirname(filename.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(filename.replace('/', os.sep)) in filenames
 
     buf = StringIO()

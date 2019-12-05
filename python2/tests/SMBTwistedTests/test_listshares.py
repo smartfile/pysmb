@@ -3,7 +3,7 @@ from nose.twistedtools import reactor, deferred
 from twisted.internet import defer
 from smb.SMBProtocol import SMBProtocolFactory
 from smb import smb_structs
-from util import getConnectionInfo
+from .util import getConnectionInfo
 
 
 class ListSharesFactory(SMBProtocolFactory):
@@ -20,7 +20,7 @@ class ListSharesFactory(SMBProtocolFactory):
 
     def onAuthOK(self):
         def cb(results):
-            assert 'smbtest' in map(lambda r: r.name.lower(), results)
+            assert 'smbtest' in [r.name.lower() for r in results]
             self.d.callback(True)
             self.instance.transport.loseConnection()
 

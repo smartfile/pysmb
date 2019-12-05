@@ -3,7 +3,7 @@ from nose.twistedtools import reactor, deferred
 from twisted.internet import defer
 from smb.SMBProtocol import SMBProtocolFactory
 from smb import smb_structs
-from util import getConnectionInfo
+from .util import getConnectionInfo
 
 
 class ListSnapshotsFactory(SMBProtocolFactory):

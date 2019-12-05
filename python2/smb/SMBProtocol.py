@@ -2,9 +2,9 @@
 import os, logging, time
 from twisted.internet import reactor, defer
 from twisted.internet.protocol import ClientFactory, Protocol
-from smb_constants import *
-from smb_structs import *
-from base import SMB, NotConnectedError, NotReadyError, SMBTimeout
+from .smb_constants import *
+from .smb_structs import *
+from .base import SMB, NotConnectedError, NotReadyError, SMBTimeout
 
 
 __all__ = [ 'SMBProtocolFactory', 'NotConnectedError', 'NotReadyError' ]
@@ -58,7 +58,7 @@ class SMBProtocol(Protocol, SMB):
     def _cleanupPendingRequests(self):
         if self.factory.instance == self:
             now = time.time()
-            for mid, r in self.pending_requests.iteritems():
+            for mid, r in self.pending_requests.items():
                 if r.expiry_time < now:
                     try:
                         r.errback(SMBTimeout())
@@ -242,9 +242,9 @@ class SMBProtocolFactory(ClientFactory):
         :return: A *twisted.internet.defer.Deferred* instance. The callback function will be called with a 3-element tuple of ( *file_obj*, file attributes of the file on server, number of bytes written to *file_obj* ).
                  The file attributes is an integer value made up from a bitwise-OR of *SMB_FILE_ATTRIBUTE_xxx* bits (see smb_constants.py)
         """
-        return self.retrieveFileFromOffset(service_name, path, file_obj, 0L, -1L, timeout)
+        return self.retrieveFileFromOffset(service_name, path, file_obj, 0, -1, timeout)
 
-    def retrieveFileFromOffset(self, service_name, path, file_obj, offset = 0L, max_length = -1L, timeout = 30):
+    def retrieveFileFromOffset(self, service_name, path, file_obj, offset = 0, max_length = -1, timeout = 30):
         """
         Retrieve the contents of the file at *path* on the *service_name* and write these contents to the provided *file_obj*.
 

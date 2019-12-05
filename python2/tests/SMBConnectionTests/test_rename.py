@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os, time, random
-from StringIO import StringIO
+from io import StringIO
 from smb.SMBConnection import SMBConnection
-from util import getConnectionInfo
+from .util import getConnectionInfo
 from nose.tools import with_setup
 from smb import smb_structs
 
@@ -37,14 +37,14 @@ def test_rename_english_file_SMB1():
     conn.storeFile('smbtest', old_path, StringIO('Rename file test'))
 
     entries = conn.listPath('smbtest', os.path.dirname(old_path.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(old_path.replace('/', os.sep)) in filenames
     assert os.path.basename(new_path.replace('/', os.sep)) not in filenames
 
     conn.rename('smbtest', old_path, new_path)
 
     entries = conn.listPath('smbtest', os.path.dirname(old_path.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(old_path.replace('/', os.sep)) not in filenames
     assert os.path.basename(new_path.replace('/', os.sep)) in filenames
 
@@ -60,14 +60,14 @@ def test_rename_english_file_SMB2():
     conn.storeFile('smbtest', old_path, StringIO('Rename file test'))
 
     entries = conn.listPath('smbtest', os.path.dirname(old_path.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(old_path.replace('/', os.sep)) in filenames
     assert os.path.basename(new_path.replace('/', os.sep)) not in filenames
 
     conn.rename('smbtest', old_path, new_path)
 
     entries = conn.listPath('smbtest', os.path.dirname(old_path.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(old_path.replace('/', os.sep)) not in filenames
     assert os.path.basename(new_path.replace('/', os.sep)) in filenames
 
@@ -77,20 +77,20 @@ def test_rename_english_file_SMB2():
 def test_rename_unicode_file_SMB1():
     global conn
 
-    old_path = u'/改名测试 %d-%d.txt' % ( time.time(), random.randint(1000, 9999) )
-    new_path = u'/改名测试 %d-%d.txt' % ( time.time(), random.randint(1000, 9999) )
+    old_path = '/改名测试 %d-%d.txt' % ( time.time(), random.randint(1000, 9999) )
+    new_path = '/改名测试 %d-%d.txt' % ( time.time(), random.randint(1000, 9999) )
 
     conn.storeFile('smbtest', old_path, StringIO('Rename file test'))
 
     entries = conn.listPath('smbtest', os.path.dirname(old_path.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(old_path.replace('/', os.sep)) in filenames
     assert os.path.basename(new_path.replace('/', os.sep)) not in filenames
 
     conn.rename('smbtest', old_path, new_path)
 
     entries = conn.listPath('smbtest', os.path.dirname(old_path.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(old_path.replace('/', os.sep)) not in filenames
     assert os.path.basename(new_path.replace('/', os.sep)) in filenames
 
@@ -100,20 +100,20 @@ def test_rename_unicode_file_SMB1():
 def test_rename_unicode_file_SMB2():
     global conn
 
-    old_path = u'/改名测试 %d-%d.txt' % ( time.time(), random.randint(1000, 9999) )
-    new_path = u'/改名测试 %d-%d.txt' % ( time.time(), random.randint(1000, 9999) )
+    old_path = '/改名测试 %d-%d.txt' % ( time.time(), random.randint(1000, 9999) )
+    new_path = '/改名测试 %d-%d.txt' % ( time.time(), random.randint(1000, 9999) )
 
     conn.storeFile('smbtest', old_path, StringIO('Rename file test'))
 
     entries = conn.listPath('smbtest', os.path.dirname(old_path.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(old_path.replace('/', os.sep)) in filenames
     assert os.path.basename(new_path.replace('/', os.sep)) not in filenames
 
     conn.rename('smbtest', old_path, new_path)
 
     entries = conn.listPath('smbtest', os.path.dirname(old_path.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(old_path.replace('/', os.sep)) not in filenames
     assert os.path.basename(new_path.replace('/', os.sep)) in filenames
 
@@ -129,14 +129,14 @@ def test_rename_english_directory_SMB1():
     conn.createDirectory('smbtest', old_path)
 
     entries = conn.listPath('smbtest', os.path.dirname(old_path.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(old_path.replace('/', os.sep)) in filenames
     assert os.path.basename(new_path.replace('/', os.sep)) not in filenames
 
     conn.rename('smbtest', old_path, new_path)
 
     entries = conn.listPath('smbtest', os.path.dirname(old_path.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(old_path.replace('/', os.sep)) not in filenames
     assert os.path.basename(new_path.replace('/', os.sep)) in filenames
 
@@ -152,14 +152,14 @@ def test_rename_english_directory_SMB2():
     conn.createDirectory('smbtest', old_path)
 
     entries = conn.listPath('smbtest', os.path.dirname(old_path.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(old_path.replace('/', os.sep)) in filenames
     assert os.path.basename(new_path.replace('/', os.sep)) not in filenames
 
     conn.rename('smbtest', old_path, new_path)
 
     entries = conn.listPath('smbtest', os.path.dirname(old_path.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(old_path.replace('/', os.sep)) not in filenames
     assert os.path.basename(new_path.replace('/', os.sep)) in filenames
 
@@ -169,20 +169,20 @@ def test_rename_english_directory_SMB2():
 def test_rename_unicode_directory_SMB1():
     global conn
 
-    old_path = u'/改名测试 %d-%d' % ( time.time(), random.randint(1000, 9999) )
-    new_path = u'/改名测试 %d-%d' % ( time.time(), random.randint(1000, 9999) )
+    old_path = '/改名测试 %d-%d' % ( time.time(), random.randint(1000, 9999) )
+    new_path = '/改名测试 %d-%d' % ( time.time(), random.randint(1000, 9999) )
 
     conn.createDirectory('smbtest', old_path)
 
     entries = conn.listPath('smbtest', os.path.dirname(old_path.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(old_path.replace('/', os.sep)) in filenames
     assert os.path.basename(new_path.replace('/', os.sep)) not in filenames
 
     conn.rename('smbtest', old_path, new_path)
 
     entries = conn.listPath('smbtest', os.path.dirname(old_path.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(old_path.replace('/', os.sep)) not in filenames
     assert os.path.basename(new_path.replace('/', os.sep)) in filenames
 
@@ -192,20 +192,20 @@ def test_rename_unicode_directory_SMB1():
 def test_rename_unicode_directory_SMB2():
     global conn
 
-    old_path = u'/改名测试 %d-%d' % ( time.time(), random.randint(1000, 9999) )
-    new_path = u'/改名测试 %d-%d' % ( time.time(), random.randint(1000, 9999) )
+    old_path = '/改名测试 %d-%d' % ( time.time(), random.randint(1000, 9999) )
+    new_path = '/改名测试 %d-%d' % ( time.time(), random.randint(1000, 9999) )
 
     conn.createDirectory('smbtest', old_path)
 
     entries = conn.listPath('smbtest', os.path.dirname(old_path.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(old_path.replace('/', os.sep)) in filenames
     assert os.path.basename(new_path.replace('/', os.sep)) not in filenames
 
     conn.rename('smbtest', old_path, new_path)
 
     entries = conn.listPath('smbtest', os.path.dirname(old_path.replace('/', os.sep)))
-    filenames = map(lambda e: e.filename, entries)
+    filenames = [e.filename for e in entries]
     assert os.path.basename(old_path.replace('/', os.sep)) not in filenames
     assert os.path.basename(new_path.replace('/', os.sep)) in filenames
 

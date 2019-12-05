@@ -28,7 +28,7 @@ class DirectoryFactory(SMBProtocolFactory):
         d.addErrback(self.d.errback)
 
     def listComplete(self, entries):
-        names = map(lambda e: e.filename, entries)
+        names = [e.filename for e in entries]
         assert os.path.basename(self.path.replace('/', os.sep)) in names
 
         d = self.deleteDirectory(self.service_name, self.path)
@@ -41,7 +41,7 @@ class DirectoryFactory(SMBProtocolFactory):
         d.addErrback(self.d.errback)
 
     def list2Complete(self, entries):
-        names = map(lambda e: e.filename, entries)
+        names = [e.filename for e in entries]
         assert os.path.basename(self.path.replace('/', os.sep)) not in names
         self.d.callback(True)
 
@@ -83,7 +83,7 @@ def test_unicode_directory_SMB1():
 
     factory = DirectoryFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service_name = 'smbtest'
-    factory.path = os.sep + u'文件夹创建 %d-%d' % ( time.time(), random.randint(0, 1000) )
+    factory.path = os.sep + '文件夹创建 %d-%d' % ( time.time(), random.randint(0, 1000) )
     reactor.connectTCP(info['server_ip'], info['server_port'], factory)
     return factory.d
 
@@ -94,6 +94,6 @@ def test_unicode_directory_SMB2():
 
     factory = DirectoryFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service_name = 'smbtest'
-    factory.path = os.sep + u'文件夹创建 %d-%d' % ( time.time(), random.randint(0, 1000) )
+    factory.path = os.sep + '文件夹创建 %d-%d' % ( time.time(), random.randint(0, 1000) )
     reactor.connectTCP(info['server_ip'], info['server_port'], factory)
     return factory.d

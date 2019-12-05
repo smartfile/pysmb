@@ -1,7 +1,7 @@
 
 import os, logging, random, socket, time, select
-from base import NBNS, NotConnectedError
-from nmb_constants import TYPE_CLIENT, TYPE_SERVER, TYPE_WORKSTATION
+from .base import NBNS, NotConnectedError
+from .nmb_constants import TYPE_CLIENT, TYPE_SERVER, TYPE_WORKSTATION
 
 class NetBIOS(NBNS):
 
@@ -78,7 +78,7 @@ class NetBIOS(NBNS):
         self.write(data, ip, port)
         ret = self._pollForQueryPacket(trn_id, timeout)
         if ret:
-            return map(lambda s: s[0], filter(lambda s: s[1] == TYPE_SERVER, ret))
+            return [s[0] for s in [s for s in ret if s[1] == TYPE_SERVER]]
         else:
             return None
 
@@ -106,8 +106,8 @@ class NetBIOS(NBNS):
 
                 if trn_id == wait_trn_id:
                     return ret
-            except select.error, ex:
-                if type(ex) is types.TupleType:
+            except select.error as ex:
+                if type(ex) is tuple:
                     if ex[0] != errno.EINTR and ex[0] != errno.EAGAIN:
                         raise ex
                 else:
@@ -136,8 +136,8 @@ class NetBIOS(NBNS):
 
                 if trn_id == wait_trn_id:
                     return ret
-            except select.error, ex:
-                if type(ex) is types.TupleType:
+            except select.error as ex:
+                if type(ex) is tuple:
                     if ex[0] != errno.EINTR and ex[0] != errno.EAGAIN:
                         raise ex
                 else:

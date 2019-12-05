@@ -20,12 +20,12 @@ class ListPathFactory(SMBProtocolFactory):
 
     def onAuthOK(self):
         def cb(results):
-            filenames = map(lambda r: ( r.filename, r.isDirectory ), results)
-            assert ( u'\u6d4b\u8bd5\u6587\u4ef6\u5939', True ) in filenames  # Test non-English folder names
-            assert ( u'Test Folder with Long Name', True ) in filenames      # Test long English folder names
-            assert ( u'TestDir1', True ) in filenames                        # Test short English folder names
-            assert ( u'Implementing CIFS - SMB.html', False ) in filenames   # Test long English file names
-            assert ( u'rfc1001.txt', False ) in filenames                    # Test short English file names
+            filenames = [( r.filename, r.isDirectory ) for r in results]
+            assert ( '\u6d4b\u8bd5\u6587\u4ef6\u5939', True ) in filenames  # Test non-English folder names
+            assert ( 'Test Folder with Long Name', True ) in filenames      # Test long English folder names
+            assert ( 'TestDir1', True ) in filenames                        # Test short English folder names
+            assert ( 'Implementing CIFS - SMB.html', False ) in filenames   # Test long English file names
+            assert ( 'rfc1001.txt', False ) in filenames                    # Test short English file names
 
             self.d.callback(True)
 

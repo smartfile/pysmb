@@ -5,7 +5,7 @@ from nose.twistedtools import reactor, deferred
 from twisted.internet import defer
 from smb.SMBProtocol import SMBProtocolFactory
 from smb import smb_structs
-from util import getConnectionInfo
+from .util import getConnectionInfo
 
 try:
     import hashlib
@@ -131,7 +131,7 @@ def test_retr_unicodefilename_SMB1():
 
     factory = RetrieveFileFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service = 'smbtest'
-    factory.path = u'/测试文件夹/垃圾文件.dat'
+    factory.path = '/测试文件夹/垃圾文件.dat'
     factory.digest = '8a44c1e80d55e91c92350955cdf83442'
     factory.filesize = 256000
     reactor.connectTCP(info['server_ip'], info['server_port'], factory)
@@ -145,7 +145,7 @@ def test_retr_unicodefilename_SMB2():
 
     factory = RetrieveFileFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service = 'smbtest'
-    factory.path = u'/测试文件夹/垃圾文件.dat'
+    factory.path = '/测试文件夹/垃圾文件.dat'
     factory.digest = '8a44c1e80d55e91c92350955cdf83442'
     factory.filesize = 256000
     reactor.connectTCP(info['server_ip'], info['server_port'], factory)
@@ -159,7 +159,7 @@ def test_retr_offset_SMB1():
 
     factory = RetrieveFileFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service = 'smbtest'
-    factory.path = u'/测试文件夹/垃圾文件.dat'
+    factory.path = '/测试文件夹/垃圾文件.dat'
     factory.digest = 'a141bd8024571ce7cb5c67f2b0d8ea0b'
     factory.filesize = 156000
     factory.offset = 100000
@@ -174,7 +174,7 @@ def test_retr_offset_SMB2():
 
     factory = RetrieveFileFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service = 'smbtest'
-    factory.path = u'/测试文件夹/垃圾文件.dat'
+    factory.path = '/测试文件夹/垃圾文件.dat'
     factory.digest = 'a141bd8024571ce7cb5c67f2b0d8ea0b'
     factory.filesize = 156000
     factory.offset = 100000
@@ -189,7 +189,7 @@ def test_retr_offset_and_biglimit_SMB1():
 
     factory = RetrieveFileFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service = 'smbtest'
-    factory.path = u'/测试文件夹/垃圾文件.dat'
+    factory.path = '/测试文件夹/垃圾文件.dat'
     factory.digest = '83b7afd7c92cdece3975338b5ca0b1c5'
     factory.filesize = 100000
     factory.offset = 100000
@@ -205,7 +205,7 @@ def test_retr_offset_and_biglimit_SMB2():
 
     factory = RetrieveFileFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service = 'smbtest'
-    factory.path = u'/测试文件夹/垃圾文件.dat'
+    factory.path = '/测试文件夹/垃圾文件.dat'
     factory.digest = '83b7afd7c92cdece3975338b5ca0b1c5'
     factory.filesize = 100000
     factory.offset = 100000
@@ -221,7 +221,7 @@ def test_retr_offset_and_smalllimit_SMB1():
 
     factory = RetrieveFileFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service = 'smbtest'
-    factory.path = u'/测试文件夹/垃圾文件.dat'
+    factory.path = '/测试文件夹/垃圾文件.dat'
     factory.digest = '746f60a96b39b712a7b6e17ddde19986'
     factory.filesize = 10
     factory.offset = 100000
@@ -237,7 +237,7 @@ def test_retr_offset_and_smalllimit_SMB2():
 
     factory = RetrieveFileFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service = 'smbtest'
-    factory.path = u'/测试文件夹/垃圾文件.dat'
+    factory.path = '/测试文件夹/垃圾文件.dat'
     factory.digest = '746f60a96b39b712a7b6e17ddde19986'
     factory.filesize = 10
     factory.offset = 100000
@@ -253,7 +253,7 @@ def test_retr_offset_and_zerolimit_SMB1():
 
     factory = RetrieveFileFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service = 'smbtest'
-    factory.path = u'/测试文件夹/垃圾文件.dat'
+    factory.path = '/测试文件夹/垃圾文件.dat'
     factory.digest = 'd41d8cd98f00b204e9800998ecf8427e'
     factory.filesize = 0
     factory.offset = 100000
@@ -269,7 +269,7 @@ def test_retr_offset_and_zerolimit_SMB2():
     
     factory = RetrieveFileFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service = 'smbtest'
-    factory.path = u'/测试文件夹/垃圾文件.dat'
+    factory.path = '/测试文件夹/垃圾文件.dat'
     factory.digest = 'd41d8cd98f00b204e9800998ecf8427e'
     factory.filesize = 0
     factory.offset = 100000

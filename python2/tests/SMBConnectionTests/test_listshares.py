@@ -1,6 +1,6 @@
 
 from smb.SMBConnection import SMBConnection
-from util import getConnectionInfo
+from .util import getConnectionInfo
 from nose.tools import with_setup
 from smb import smb_structs
 
@@ -28,10 +28,10 @@ def teardown_func():
 def test_listshares_SMB1():
     global conn
     results = conn.listShares()
-    assert 'smbtest' in map(lambda r: r.name.lower(), results)
+    assert 'smbtest' in [r.name.lower() for r in results]
 
 @with_setup(setup_func_SMB2, teardown_func)
 def test_listshares_SMB2():
     global conn
     results = conn.listShares()
-    assert 'smbtest' in map(lambda r: r.name.lower(), results)
+    assert 'smbtest' in [r.name.lower() for r in results]

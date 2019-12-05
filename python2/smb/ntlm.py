@@ -1,6 +1,6 @@
 
 import types, hmac, binascii, struct, random
-from utils.pyDes import des
+from .utils.pyDes import des
 
 try:
     import hashlib
@@ -8,7 +8,7 @@ try:
 
     def MD4(): return hashlib.new('md4')
 except ( ImportError, ValueError ):
-    from utils.md4 import MD4
+    from .utils.md4 import MD4
 
 try:
     import hashlib

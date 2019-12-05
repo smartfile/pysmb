@@ -1,5 +1,5 @@
 
-import os, sys, socket, urllib2, mimetypes, mimetools, tempfile
+import os, sys, socket, urllib.request, urllib.error, urllib.parse, mimetypes, mimetools, tempfile
 from urllib import (unwrap, unquote, splittype, splithost, quote,
      addinfourl, splitport, splittag,
      splitattr, ftpwrapper, splituser, splitpasswd, splitvalue)
@@ -7,21 +7,21 @@ from nmb.NetBIOS import NetBIOS
 from smb.SMBConnection import SMBConnection
 
 try:
-    from cStringIO import StringIO
+    from io import StringIO
 except ImportError:
-    from StringIO import StringIO
+    from io import StringIO
 
 USE_NTLM = True
 MACHINE_NAME = None
 
-class SMBHandler(urllib2.BaseHandler):
+class SMBHandler(urllib.request.BaseHandler):
 
     def smb_open(self, req):
         global USE_NTLM, MACHINE_NAME
 
         host = req.get_host()
         if not host:
-            raise urllib2.URLError('SMB error: no host given')
+            raise urllib.error.URLError('SMB error: no host given')
         host, port = splitport(host)
         if port is None:
             port = 139
@@ -49,13 +49,13 @@ class SMBHandler(urllib2.BaseHandler):
         if names:
             server_name = names[0]
         else:
-            raise urllib2.URLError('SMB error: Hostname does not reply back with its machine name')
+            raise urllib.error.URLError('SMB error: Hostname does not reply back with its machine name')
 
         path, attrs = splitattr(req.get_selector())
         if path.startswith('/'):
             path = path[1:]
         dirs = path.split('/')
-        dirs = map(unquote, dirs)
+        dirs = list(map(unquote, dirs))
         service, path = dirs[0], '/'.join(dirs[1:])
 
         try:
@@ -84,8 +84,8 @@ class SMBHandler(urllib2.BaseHandler):
             headers = mimetools.Message(sf)
 
             return addinfourl(fp, headers, req.get_full_url())
-        except Exception, ex:
-            raise urllib2.URLError, ('smb error: %s' % ex), sys.exc_info()[2]
+        except Exception as ex:
+            raise urllib.error.URLError('smb error: %s' % ex).with_traceback(sys.exc_info()[2])
 
     def createTempFile(self):
         return tempfile.TemporaryFile()

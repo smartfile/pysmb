@@ -1,10 +1,10 @@
 
 import os, sys, struct, types, logging, binascii, time
-from StringIO import StringIO
-from smb_structs import ProtocolError
-from smb_constants import *
-from smb2_constants import *
-from utils import convertFILETIMEtoEpoch
+from io import StringIO
+from .smb_structs import ProtocolError
+from .smb_constants import *
+from .smb2_constants import *
+from .utils import convertFILETIMEtoEpoch
 
 
 class SMB2Message:
@@ -63,7 +63,7 @@ class SMB2Message:
         # Not used in this class. Maintained for compatibility with SMBMessage class
         self.flags2 = 0
         self.uid = 0
-        self.security = 0L
+        self.security = 0
         self.parameters_data = ''
 
     def encode(self):

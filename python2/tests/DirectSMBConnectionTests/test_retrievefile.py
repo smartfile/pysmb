@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import os, tempfile
-from StringIO import StringIO
+from io import StringIO
 from smb.SMBConnection import SMBConnection
-from util import getConnectionInfo
+from .util import getConnectionInfo
 from nose.tools import with_setup
 from smb import smb_structs
 
@@ -95,7 +95,7 @@ def test_retr_unicodefilename_SMB1():
     # Test file retrieval that has a long non-English filename inside a folder with a non-English name
     global conn
     temp_fh = StringIO()
-    file_attributes, filesize = conn.retrieveFile('smbtest', u'/测试文件夹/垃圾文件.dat', temp_fh)
+    file_attributes, filesize = conn.retrieveFile('smbtest', '/测试文件夹/垃圾文件.dat', temp_fh)
 
     md = MD5()
     md.update(temp_fh.getvalue())
@@ -109,7 +109,7 @@ def test_retr_unicodefilename_SMB2():
     # Test file retrieval that has a long non-English filename inside a folder with a non-English name
     global conn
     temp_fh = StringIO()
-    file_attributes, filesize = conn.retrieveFile('smbtest', u'/测试文件夹/垃圾文件.dat', temp_fh)
+    file_attributes, filesize = conn.retrieveFile('smbtest', '/测试文件夹/垃圾文件.dat', temp_fh)
 
     md = MD5()
     md.update(temp_fh.getvalue())
@@ -123,7 +123,7 @@ def test_retr_offset_SMB1():
     # Test file retrieval from offset to EOF
     global conn
     temp_fh = StringIO()
-    file_attributes, filesize = conn.retrieveFileFromOffset('smbtest', u'/测试文件夹/垃圾文件.dat', temp_fh, offset = 100000)
+    file_attributes, filesize = conn.retrieveFileFromOffset('smbtest', '/测试文件夹/垃圾文件.dat', temp_fh, offset = 100000)
 
     md = MD5()
     md.update(temp_fh.getvalue())
@@ -137,7 +137,7 @@ def test_retr_offset_SMB2():
     # Test file retrieval from offset to EOF
     global conn
     temp_fh = StringIO()
-    file_attributes, filesize = conn.retrieveFileFromOffset('smbtest', u'/测试文件夹/垃圾文件.dat', temp_fh, offset = 100000)
+    file_attributes, filesize = conn.retrieveFileFromOffset('smbtest', '/测试文件夹/垃圾文件.dat', temp_fh, offset = 100000)
 
     md = MD5()
     md.update(temp_fh.getvalue())
@@ -151,7 +151,7 @@ def test_retr_offset_and_biglimit_SMB1():
     # Test file retrieval from offset with a big max_length
     global conn
     temp_fh = StringIO()
-    file_attributes, filesize = conn.retrieveFileFromOffset('smbtest', u'/测试文件夹/垃圾文件.dat', temp_fh, offset = 100000, max_length = 100000)
+    file_attributes, filesize = conn.retrieveFileFromOffset('smbtest', '/测试文件夹/垃圾文件.dat', temp_fh, offset = 100000, max_length = 100000)
 
     md = MD5()
     md.update(temp_fh.getvalue())
@@ -165,7 +165,7 @@ def test_retr_offset_and_biglimit_SMB2():
     # Test file retrieval from offset with a big max_length
     global conn
     temp_fh = StringIO()
-    file_attributes, filesize = conn.retrieveFileFromOffset('smbtest', u'/测试文件夹/垃圾文件.dat', temp_fh, offset = 100000, max_length = 100000)
+    file_attributes, filesize = conn.retrieveFileFromOffset('smbtest', '/测试文件夹/垃圾文件.dat', temp_fh, offset = 100000, max_length = 100000)
 
     md = MD5()
     md.update(temp_fh.getvalue())
@@ -179,7 +179,7 @@ def test_retr_offset_and_smalllimit_SMB1():
     # Test file retrieval from offset with a small max_length
     global conn
     temp_fh = StringIO()
-    file_attributes, filesize = conn.retrieveFileFromOffset('smbtest', u'/测试文件夹/垃圾文件.dat', temp_fh, offset = 100000, max_length = 10)
+    file_attributes, filesize = conn.retrieveFileFromOffset('smbtest', '/测试文件夹/垃圾文件.dat', temp_fh, offset = 100000, max_length = 10)
 
     md = MD5()
     md.update(temp_fh.getvalue())
@@ -193,7 +193,7 @@ def test_retr_offset_and_smalllimit_SMB2():
     # Test file retrieval from offset with a small max_length
     global conn
     temp_fh = StringIO()
-    file_attributes, filesize = conn.retrieveFileFromOffset('smbtest', u'/测试文件夹/垃圾文件.dat', temp_fh, offset = 100000, max_length = 10)
+    file_attributes, filesize = conn.retrieveFileFromOffset('smbtest', '/测试文件夹/垃圾文件.dat', temp_fh, offset = 100000, max_length = 10)
 
     md = MD5()
     md.update(temp_fh.getvalue())
@@ -207,7 +207,7 @@ def test_retr_offset_and_zerolimit_SMB1():
     # Test file retrieval from offset to EOF with max_length=0
     global conn
     temp_fh = StringIO()
-    file_attributes, filesize = conn.retrieveFileFromOffset('smbtest', u'/测试文件夹/垃圾文件.dat', temp_fh, offset = 100000, max_length = 0)
+    file_attributes, filesize = conn.retrieveFileFromOffset('smbtest', '/测试文件夹/垃圾文件.dat', temp_fh, offset = 100000, max_length = 0)
 
     md = MD5()
     md.update(temp_fh.getvalue())
@@ -221,7 +221,7 @@ def test_retr_offset_and_zerolimit_SMB2():
     # Test file retrieval from offset to EOF with max_length=0
     global conn
     temp_fh = StringIO()
-    file_attributes, filesize = conn.retrieveFileFromOffset('smbtest', u'/测试文件夹/垃圾文件.dat', temp_fh, offset = 100000, max_length = 0)
+    file_attributes, filesize = conn.retrieveFileFromOffset('smbtest', '/测试文件夹/垃圾文件.dat', temp_fh, offset = 100000, max_length = 0)
 
     md = MD5()
     md.update(temp_fh.getvalue())

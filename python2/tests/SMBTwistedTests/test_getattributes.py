@@ -3,7 +3,7 @@ from nose.twistedtools import reactor, deferred
 from twisted.internet import defer
 from smb.SMBProtocol import SMBProtocolFactory
 from smb import smb_structs
-from util import getConnectionInfo
+from .util import getConnectionInfo
 
 
 class GetAttributesFactory(SMBProtocolFactory):
@@ -61,7 +61,7 @@ def test_getAttributes_SMB1_test3():
     smb_structs.SUPPORT_SMB2 = False
 
     factory = GetAttributesFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
-    factory.path = u'/\u6d4b\u8bd5\u6587\u4ef6\u5939'
+    factory.path = '/\u6d4b\u8bd5\u6587\u4ef6\u5939'
     factory.is_directory = True
     reactor.connectTCP(info['server_ip'], info['server_port'], factory)
     return factory.d
@@ -94,7 +94,7 @@ def test_getAttributes_SMB2_test3():
     smb_structs.SUPPORT_SMB2 = True
 
     factory = GetAttributesFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
-    factory.path = u'/\u6d4b\u8bd5\u6587\u4ef6\u5939'
+    factory.path = '/\u6d4b\u8bd5\u6587\u4ef6\u5939'
     factory.is_directory = True
     reactor.connectTCP(info['server_ip'], info['server_port'], factory)
     return factory.d

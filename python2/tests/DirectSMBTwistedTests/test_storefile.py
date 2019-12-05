@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os, time, random
-from StringIO import StringIO
+from io import StringIO
 from nose.twistedtools import reactor, deferred
 from twisted.internet import defer
 from smb.SMBProtocol import SMBProtocolFactory
@@ -46,7 +46,7 @@ class StoreFilesFactory(SMBProtocolFactory):
         d.addErrback(self.d.errback)
 
     def listComplete(self, entries):
-        filenames = map(lambda e: e.filename, entries)
+        filenames = [e.filename for e in entries]
         assert os.path.basename(self.filename.replace('/', os.sep)) in filenames
 
         for entry in entries:
@@ -82,7 +82,7 @@ class StoreFilesFactory(SMBProtocolFactory):
         d.addErrback(self.d.errback)
 
     def list2Complete(self, entries):
-        filenames = map(lambda e: e.filename, entries)
+        filenames = [e.filename for e in entries]
         assert os.path.basename(self.filename.replace('/', os.sep)) not in filenames
         self.d.callback(True)
         self.instance.transport.loseConnection()
@@ -125,7 +125,7 @@ def test_store_unicode_filename_SMB1():
 
     factory = StoreFilesFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service_name = 'smbtest'
-    factory.filename = os.sep + u'上载测试 %d-%d.dat' % ( time.time(), random.randint(0, 10000) )
+    factory.filename = os.sep + '上载测试 %d-%d.dat' % ( time.time(), random.randint(0, 10000) )
     reactor.connectTCP(info['server_ip'], info['server_port'], factory)
     return factory.d
 
@@ -136,6 +136,6 @@ def test_store_unicode_filename_SMB2():
 
     factory = StoreFilesFactory(info['user'], info['password'], info['client_name'], info['server_name'], use_ntlm_v2 = True)
     factory.service_name = 'smbtest'
-    factory.filename = os.sep + u'上载测试 %d-%d.dat' % ( time.time(), random.randint(0, 10000) )
+    factory.filename = os.sep + '上载测试 %d-%d.dat' % ( time.time(), random.randint(0, 10000) )
     reactor.connectTCP(info['server_ip'], info['server_port'], factory)
     return factory.d
