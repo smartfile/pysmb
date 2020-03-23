@@ -6,6 +6,8 @@ def encode_name(name, type, scope = None):
     """
     Perform first and second level encoding of name as specified in RFC 1001 (Section 4)
     """
+    if isinstance(name, bytes):
+        name = name.decode('utf-8')
     if name == '*':
         name = name + '\0' * 15
     elif len(name) > 15:
