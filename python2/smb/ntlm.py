@@ -164,7 +164,10 @@ def generateChallengeResponseV2(password, user, server_challenge, server_info, d
         password = password.decode('utf-8')
     d.update(password.encode('UTF-16LE'))
     ntlm_hash = d.digest()   # The NT password hash
-    response_key = hmac.new(ntlm_hash, (user.upper() + domain).encode('UTF-16LE')).digest()  # The NTLMv2 password hash. In [MS-NLMP], this is the result of NTOWFv2 and LMOWFv2 functions
+    upper = user.upper()
+    if isinstance(upper, bytes):
+        upper = upper.decode('utf-8')
+    response_key = hmac.new(ntlm_hash, (upper + domain).encode('UTF-16LE')).digest()  # The NTLMv2 password hash. In [MS-NLMP], this is the result of NTOWFv2 and LMOWFv2 functions
     temp = '\x01\x01' + '\0'*6 + client_timestamp + client_challenge + '\0'*4 + server_info
     ntproofstr = hmac.new(response_key, server_challenge + temp).digest()
 
