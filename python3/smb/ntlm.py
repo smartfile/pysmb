@@ -103,6 +103,8 @@ def generateAuthenticateMessage(challenge_flags, nt_response, lm_response, sessi
         padding = b'\0'
         domain_offset += 1
 
+    if isinstance(user, bytes):
+        user = user.decode('utf-8')
     user_unicode = user.encode('UTF-16LE')
     user_length = len(user_unicode)
     user_offset = domain_offset + domain_length
