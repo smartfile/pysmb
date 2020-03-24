@@ -720,6 +720,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             elif kwargs['error'] is not None:
                 errback(OperationFailure('Failed to get attributes for %s on %s: Query failed with errorcode 0x%08x' % ( path, service_name, kwargs['error'] ), messages_history))
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
@@ -850,6 +852,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             elif kwargs['error'] is not None:
                 errback(OperationFailure('Failed to retrieve %s on %s: Read failed' % ( path, service_name ), messages_history))
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
@@ -946,6 +950,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             elif kwargs['error'] is not None:
                 errback(OperationFailure('Failed to store %s on %s: Write failed' % ( path, service_name ), messages_history))
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
@@ -1036,6 +1042,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to delete %s on %s: Delete failed' % ( path, service_name ), messages_history))
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
@@ -1104,6 +1112,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
         def closeCB(close_message, **kwargs):
             callback(path)
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
@@ -1193,6 +1203,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to delete %s on %s: Delete failed' % ( path, service_name ), messages_history))
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
@@ -1290,6 +1302,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to rename %s on %s: Rename failed' % ( old_path, service_name ), messages_history))
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
@@ -1381,6 +1395,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to list snapshots %s on %s: List failed' % ( path, service_name ), messages_history))
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
@@ -1933,6 +1949,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to list %s on %s: Unable to retrieve file list' % ( path, service_name ), messages_history))
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
@@ -1993,6 +2011,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to get attributes for %s on %s: Read failed' % ( path, service_name ), messages_history))
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
@@ -2087,6 +2107,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             self._sendSMBMessage(m)
             messages_history.append(m)
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
@@ -2160,6 +2182,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             self._sendSMBMessage(m)
             messages_history.append(m)
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
@@ -2198,6 +2222,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to store %s on %s: Delete failed' % ( path, service_name ), messages_history))
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
@@ -2235,6 +2261,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to create directory %s on %s: Create failed' % ( path, service_name ), messages_history))
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
@@ -2272,6 +2300,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to delete directory %s on %s: Delete failed' % ( path, service_name ), messages_history))
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
@@ -2312,6 +2342,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             else:
                 errback(OperationFailure('Failed to rename %s on %s: Rename failed' % ( old_path, service_name ), messages_history))
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
@@ -2395,6 +2427,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             self._sendSMBMessage(m)
             messages_history.append(m)
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
