@@ -231,6 +231,8 @@ def generateChallengeResponseV1(password, server_challenge, has_extended_securit
     lm_response_key = d1.encrypt("KGS!@#$%") + d2.encrypt("KGS!@#$%")  # LM password hash. In [MS-NLMP], this is the result of LMOWFv1 function
 
     d = MD4()
+    if isinstance(password, bytes):
+        password = password.decode('utf-8')
     d.update(password.encode('UTF-16LE'))
     nt_response_key = d.digest()   # In [MS-NLMP], this is the result of NTOWFv1 function
 
