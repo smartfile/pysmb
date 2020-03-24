@@ -643,6 +643,8 @@ c8 4f 32 4b 70 16 d3 01 12 78 5a 47 bf 6e e1 88
             elif kwargs['error'] is not None:
                 errback(OperationFailure('Failed to list %s on %s: Query failed with errorcode 0x%08x' % ( path, service_name, kwargs['error'] ), messages_history))
 
+        if isinstance(service_name, bytes):
+            service_name = service_name.decode('utf-8')
         if service_name not in self.connected_trees:
             def connectCB(connect_message, **kwargs):
                 messages_history.append(connect_message)
